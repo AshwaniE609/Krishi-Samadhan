@@ -1,0 +1,86 @@
+# 🌾 Krishi Samadhan - Multilingual Agri-Advisor Chatbot
+
+**Krishi Samadhan** is a sophisticated, web-based AI chatbot designed to serve as a comprehensive agricultural advisor.  
+Built with **Vanilla JavaScript**, it integrates powerful AI and speech services to provide **multilingual support**, **location-aware advice**, and **context-based answers** from user-uploaded documents.
+
+---
+
+## ✨ Key Features
+
+### 🌐 Multilingual Interface & I/O  
+Supports multiple Indian languages:  
+**Hindi, English, Marathi, Tamil, Bengali, Punjabi, Gujarati** – for both input and AI responses.
+
+### 🗣️ Dual Interaction Modes
+- **Text Mode**: Classic text-based chat.  
+- **Speech Mode**: Full voice-in, voice-out conversation using advanced **speech recognition** and **synthesis**.
+
+### 🧠 Swappable AI Models
+Switch easily between **LLMs** via the **Perplexity API**:  
+- Sonar Pro  
+- Llama 2  
+- Mistral models  
+
+### 📄 File Upload for Context
+Upload `.txt` or `.pdf` files and ask questions directly from the content.
+
+### 🌦️ Location & Weather Aware
+Detects **user’s location** + **current weather** to give context-aware advice.  
+Example: _“Is it a good day to spray pesticides in my area?”_
+
+### 📊 Usage Monitoring Dashboard
+- Tracks **total questions** + **questions per session**  
+- Reset stats anytime  
+- Export as **JSON**
+
+### ⚙️ Advanced Customization
+- Modify AI’s behavior via a hidden **System Prompt**  
+- Toggle bot **voice responses** on/off  
+
+### 🚀 Responsive Design
+Modern, **mobile-first UI** that works on **desktop, tablet, and smartphone**.
+
+### 💾 Persistent Settings
+Preferences (**language, model, mode**) and usage stats are saved in **local storage**.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript  
+- **AI Chat Completions**: Perplexity AI API  
+- **Speech Services (STT & TTS)**: Microsoft Azure Speech SDK  
+- **PDF Parsing**: PDF.js  
+- **Geolocation & Weather APIs**:  
+  - Nominatim API (reverse geocoding)  
+  - Open-Meteo API (weather data)  
+
+---
+
+## 🚀 Getting Started
+
+This is a **pure client-side application** – no backend required.  
+Run it directly in your **browser**.
+
+### ✅ Prerequisites
+You’ll need API keys for:  
+- **Perplexity AI**  
+- **Azure Speech Services**
+
+#### 🔑 Perplexity AI Key
+1. Go to [perplexity.ai](https://www.perplexity.ai/) and create an account.  
+2. Navigate to **API settings** and generate your key.  
+
+#### 🔑 Azure Speech Service Key
+1. Create a [Microsoft Azure](https://azure.microsoft.com/) account.  
+2. Create a **Speech Service** resource.  
+3. Copy a key + region from **Keys and Endpoint** section (e.g., `centralindia`).  
+
+---
+
+### 📥 Installation
+
+```bash
+# Clone repository
+git clone <your-repo-url>
+cd <your-repo-directory>
