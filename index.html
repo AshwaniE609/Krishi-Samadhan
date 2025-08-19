@@ -2099,9 +2099,9 @@
                 if (userLocation && userWeather) {
                     systemPrompt += `\n\n[User's Context]\nThe user is in ${userLocation.city}, ${userLocation.country}. Current weather: ${userWeather.temperature}°C with ${userWeather.windspeed} km/h winds. Today's date is ${new Date().toLocaleDateString()}. Provide location- and weather-aware advice, especially for agricultural questions.`;
                 }
-                if (language !== 'en') {
-                    systemPrompt += ` Your response MUST be entirely in ${translations[language].languageName}. Do not use any other language. Ensure perfect grammar and natural flow in ${translations[language].languageName}.`;
-                }
+                
+                systemPrompt += ` Your response MUST be entirely in ${translations[language].languageName}. Do not use any other language. Ensure perfect grammar and natural flow in ${translations[language].languageName}.`;
+                
                 // Add these new global variables
                 
                 // --- START: Modified message with file context ---
