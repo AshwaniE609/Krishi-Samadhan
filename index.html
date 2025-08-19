@@ -959,7 +959,17 @@
             <button class="settings-toggle" onclick="toggleSettings()">⚙️ सेटिंग्स</button>
             <button class="mode-toggle" id="modeToggle" onclick="toggleMode()">💬 टेक्स्ट मोड</button>
         </div>
-
+                <div id="imageChoiceModal" class="voice-dialog"> <div class="voice-dialog-content">
+                <div class="voice-dialog-header">
+                    <h3>Select Image Source</h3>
+                    <button class="close-dialog" id="closeImageChoiceModal">×</button>
+                </div>
+                <div class="voice-actions">
+                    <button id="takePictureButton">📷 Take Photo</button>
+                    <button id="uploadPictureButton">🖼️ Upload from Gallery</button>
+                </div>
+            </div>
+        </div>
         <div class="settings-panel" id="settingsPanel">
             <div class="settings-header">
                 <h2>सेटिंग्स</h2>
@@ -1434,6 +1444,11 @@
         const imageInfo = document.getElementById('image-info');
         const removeImageButton = document.getElementById('remove-image-button');
         // END: NEW element constants
+        // Add these constants for the new modal
+        const imageChoiceModal = document.getElementById('imageChoiceModal');
+        const closeImageChoiceModal = document.getElementById('closeImageChoiceModal');
+        const takePictureButton = document.getElementById('takePictureButton');
+        const uploadPictureButton = document.getElementById('uploadPictureButton');
 
         let azureSpeechConfig = null;
         let azureRecognizer = null;
@@ -2387,6 +2402,23 @@
             stopSpeech();
         });
 
+        // START: NEW Event Listeners for the Image Choice Modal
+        closeImageChoiceModal.addEventListener('click', () => {
+            imageChoiceModal.style.display = 'none';
+        });
+
+        takePictureButton.addEventListener('click', () => {
+            imageUploadInput.setAttribute('capture', 'environment'); // Tell browser to prefer camera
+            imageUploadInput.click();
+            imageChoiceModal.style.display = 'none';
+        });
+
+        uploadPictureButton.addEventListener('click', () => {
+            imageUploadInput.removeAttribute('capture'); // Allow normal file selection
+            imageUploadInput.click();
+            imageChoiceModal.style.display = 'none';
+        });
+        // END: NEW Event Listeners
         startListening.addEventListener('click', function() {
             if (!botResponsesStopped) {
                 azureSpeechRecognizer.startRecognition();
@@ -2396,7 +2428,11 @@
             }
         });
         // START: NEW Event Listeners
-        cameraButton.addEventListener('click', () => imageUploadInput.click());
+        // REPLACE the old cameraButton event listener with this one
+
+        cameraButton.addEventListener('click', () => {
+            imageChoiceModal.style.display = 'flex';
+        });
         imageUploadInput.addEventListener('change', handleImageSelect);
         removeImageButton.addEventListener('click', removeImagePreview);
         // END: NEW Event Listeners
