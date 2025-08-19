@@ -47,6 +47,83 @@
             overflow: hidden;
         }
 
+        /* Add this new style for the Profit button */
+        /* REPLACE the old .profit-button style with this corrected version */
+        .profit-button {
+            display: inline-block; /* Allows the button to be centered with text-align */
+            margin-top: 15px;      /* Adds space below the subtitle */
+            
+            background: rgba(255, 193, 7, 0.8); /* Using --accent-color with opacity */
+            border: none;
+            color: white;
+            padding: 10px 18px; /* Adjusted padding for better fit */
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px; /* Adjusted font size */
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .profit-button:hover {
+            background: rgba(255, 193, 7, 1);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* START: NEW styles for the "Show Reasoning" feature */
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: flex-start; /* Default for assistant */
+        }
+
+        .message.user .message-container {
+            align-items: flex-end; /* Align to the right for user */
+        }
+
+        .reasoning-button {
+            background-color: #e8f5e9; /* Light green */
+            color: var(--text-medium);
+            border: 1px solid var(--border-light);
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 8px;
+            margin-left: 10px; /* Align with bot message */
+            transition: all 0.2s ease;
+        }
+
+        .reasoning-button:hover {
+            background-color: #dcedc8;
+            color: var(--text-dark);
+        }
+
+        .thinking-text {
+            display: none; /* Hidden by default */
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-light);
+        }
+
+        .thinking-text h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .thinking-text pre {
+            white-space: pre-wrap; /* Allows text to wrap */
+            word-break: break-word;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-medium);
+        }
+/* END: NEW styles */
+
         .chat-container {
             background: var(--background-card);
             border-radius: 28px;
@@ -958,6 +1035,7 @@
             <p>आपका कृषि साथी, हर समस्या का समाधान</p>
             <button class="settings-toggle" onclick="toggleSettings()">⚙️ सेटिंग्स</button>
             <button class="mode-toggle" id="modeToggle" onclick="toggleMode()">💬 टेक्स्ट मोड</button>
+            <button class="profit-button" id="profitButton">📈 Krishi Samadhan – Farmonomics Mode </button>
         </div>
                 <div id="imageChoiceModal" class="voice-dialog"> <div class="voice-dialog-content">
                 <div class="voice-dialog-header">
@@ -1410,6 +1488,8 @@
             'llama-2-70b-chat': 'व्यापक ज्ञान क्षमताओं वाला एक बड़ा मॉडल'
         };
         // Add this new element constant
+        // Add this new element constant
+        const profitButton = document.getElementById('profitButton');
         const locationWeatherDisplay = document.getElementById('locationWeather');
         const micButton = document.getElementById('micButton');
         const voiceDialog = document.getElementById('voiceDialog');
@@ -2061,20 +2141,62 @@
             }
         }
 
-        function addMessage(content, isUser) {
+        // REPLACE your old addMessage function with this new one
+        function addMessage(fullResponse, isUser) {
             const messagesContainer = document.getElementById('messages');
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
-            
+
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container';
+
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
+
+            if (isUser) {
+                contentDiv.textContent = fullResponse;
+                messageContainer.appendChild(contentDiv);
+            } else {
+                // AI message: Parse for <thinking> and <answer> tags
+                const thinkingMatch = fullResponse.match(/<thinking>([\s\S]*?)<\/thinking>/);
+                const answerMatch = fullResponse.match(/<answer>([\s\S]*?)<\/answer>/);
+
+                if (thinkingMatch && answerMatch) {
+                    const answer = answerMatch[1].trim();
+                    const thinking = thinkingMatch[1].trim();
+
+                    contentDiv.innerHTML = `
+                        <div class="answer-text">${answer}</div>
+                        <div class="thinking-text">
+                            <h4>💡 Reasoning Process</h4>
+                            <pre>${thinking}</pre>
+                        </div>
+                    `;
+                    messageContainer.appendChild(contentDiv);
+
+                    const reasoningButton = document.createElement('button');
+                    reasoningButton.className = 'reasoning-button';
+                    reasoningButton.textContent = '💡 Show Reasoning';
+                    reasoningButton.onclick = function() {
+                        const thinkingDiv = contentDiv.querySelector('.thinking-text');
+                        const isHidden = thinkingDiv.style.display === 'none';
+                        thinkingDiv.style.display = isHidden ? 'block' : 'none';
+                        this.textContent = isHidden ? '🙈 Hide Reasoning' : '💡 Show Reasoning';
+                    };
+                    messageContainer.appendChild(reasoningButton);
+
+                } else {
+                    // Fallback for responses that don't follow the format
+                    contentDiv.textContent = fullResponse;
+                    messageContainer.appendChild(contentDiv);
+                }
+            }
             
-            messageDiv.appendChild(contentDiv);
+            messageDiv.appendChild(messageContainer);
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
-
         // --- START: New functions for file handling ---
 
         function updateFileDisplay(fileName) {
@@ -2262,6 +2384,8 @@
 
             const language = document.getElementById('languageSelect').value;
             let promptText = `You are Krishi Samadhan, an agricultural expert AI. Analyze this image and answer the user's question.`;
+            // Add this line inside the sendToGemini function
+            promptText += `\n\n[RESPONSE FORMAT]\nYour response MUST strictly follow this format: First, provide your step-by-step analysis of the image and reasoning process inside <thinking> XML tags. After the thinking block, provide the final answer inside <answer> XML tags.`;
 
             if (userLocation && userWeather) {
                 promptText += `\n\nCONTEXT: The user is in ${userLocation.city}, ${userLocation.country}. The current weather is ${userWeather.temperature}°C. Today's date is ${new Date().toLocaleDateString()}. Use this to provide localized advice.`;
@@ -2319,7 +2443,9 @@
             try {
                 const model = document.getElementById('modelSelect').value;
                 let systemPrompt = document.getElementById('systemPrompt').value.trim();
-                
+                // Add this line inside the sendToPerplexity function
+                systemPrompt += `\n\n[RESPONSE FORMAT]\nYour response MUST strictly follow this format: First, provide a step-by-step thinking process, analysis, and sources you are considering inside <thinking> XML tags. After the thinking block, provide the final, user-facing answer inside <answer> XML tags.`;
+
                 if (userLocation && userWeather) {
                     systemPrompt += `\n\n[User's Context]\nThe user is in ${userLocation.city}, ${userLocation.country}. Current weather: ${userWeather.temperature}°C with ${userWeather.windspeed} km/h winds. Today's date is ${new Date().toLocaleDateString()}. Provide location- and weather-aware advice, especially for agricultural questions.`;
                 }
@@ -2390,6 +2516,13 @@
                     voiceStatus.textContent = `Bot responses are ${translations[lang].stopBotResponses.includes('Stop') ? 'stopped' : 'रोके गए'}. Listening disabled.`;
                 }
             }
+        });
+
+        // Add this new event listener for the Profit button
+        profitButton.addEventListener('click', () => {
+            // IMPORTANT: Replace this with the actual URL you want to link to
+            const profitSiteUrl = "https://krishisamadhan.streamlit.app/"; 
+            window.open(profitSiteUrl, '_blank'); // '_blank' opens the link in a new tab
         });
 
         closeDialog.addEventListener('click', function() {
