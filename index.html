@@ -1801,12 +1801,14 @@
 
                 azureSynthesizer.SynthesisStarted = () => {
                     isSpeaking = true;
-                    stopBotResponseButtonDialog.style.display = 'block';
+                    // --- This line shows the stop button when speaking starts ---
+                    stopBotResponseButtonDialog.style.display = 'block'; 
                     console.log('Azure speech synthesis started.');
                 };
 
                 azureSynthesizer.SynthesisCompleted = () => {
                     isSpeaking = false;
+                    // --- This line hides the stop button when speaking finishes ---
                     stopBotResponseButtonDialog.style.display = 'none';
                     console.log('Azure speech synthesis completed.');
                     if (azureSynthesizer) {
@@ -1820,6 +1822,7 @@
 
                 azureSynthesizer.SynthesisCanceled = (s, e) => {
                     isSpeaking = false;
+                    // --- This line hides the stop button if synthesis is canceled ---
                     stopBotResponseButtonDialog.style.display = 'none';
                     console.error(`Azure speech synthesis canceled. Reason: ${e.reason}. Error details: ${e.errorDetails}. For more info: ${e.errorDetails}`);
                     if (azureSynthesizer) {
@@ -1845,15 +1848,7 @@
                 alert("Failed to initialize speech synthesis. Check Azure Speech SDK and API config.");
             }
         }
-        
-        // Add these two new functions
-        function updateWeatherDisplay() {
-            if (userLocation && userWeather) {
-                locationWeatherDisplay.innerHTML = `<span>📍 ${userLocation.city}, ${userLocation.country} | 🌡️ ${userWeather.temperature}°C</span>`;
-            } else {
-                locationWeatherDisplay.innerHTML = `<span>📍 Location access denied or unavailable</span>`;
-            }
-        }
+
 
         async function getLocationAndWeather() {
             if (!navigator.geolocation) {
@@ -1891,7 +1886,20 @@
                 updateWeatherDisplay();
             });
         }
-
+        function stopSpeech() {
+            if (azureSynthesizer && isSpeaking) {
+                // Close the synthesizer to immediately stop audio playback.
+                 azureSynthesizer.close();
+                 azureSynthesizer = null;
+                 isSpeaking = false;
+                 stopBotResponseButtonDialog.style.display = 'none';
+                 console.log('Azure speech stopped by user.');
+            }
+             // After stopping, immediately start listening for the next command.
+             if (currentChatMode === 'speech-to-speech' && voiceDialog.style.display === 'flex' && !botResponsesStopped) {
+                azureSpeechRecognizer.startRecognition();
+             }
+        }
         function speak(text, lang) {
             if (botResponsesStopped) {
                 console.log("Bot responses are stopped. Not speaking.");
@@ -2517,6 +2525,7 @@
                 }
             }
         });
+        stopBotResponseButtonDialog.addEventListener('click', stopSpeech);
 
         // Add this new event listener for the Profit button
         profitButton.addEventListener('click', () => {
