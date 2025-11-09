@@ -2385,7 +2385,7 @@
             const language = document.getElementById('languageSelect').value;
             let promptText = `You are Krishi Samadhan, an agricultural expert AI. Analyze this image and answer the user's question.`;
             // Add this line inside the sendToGemini function
-            promptText += `\n\n[RESPONSE FORMAT]\nYour response MUST strictly follow this format: First, provide your step-by-step analysis of the image and reasoning process inside <thinking> XML tags. After the thinking block, provide the final answer inside <answer> XML tags.`;
+            promptText += `\n\n[RESPONSE FORMAT]\nYour response MUST strictly follow this format: First, provide your step-by-step analysis of the image and reasoning process in small inside <thinking> XML tags. After the thinking block, provide the final answer inside <answer> XML tags.`;
 
             if (userLocation && userWeather) {
                 promptText += `\n\nCONTEXT: The user is in ${userLocation.city}, ${userLocation.country}. The current weather is ${userWeather.temperature}°C. Today's date is ${new Date().toLocaleDateString()}. Use this to provide localized advice.`;
